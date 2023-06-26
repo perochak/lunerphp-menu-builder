@@ -1,5 +1,14 @@
 <?php
 $currentUrl = url()->current();
+$collections =  \Lunar\Models\Collection::all();
+$cats = array();
+foreach($collections as $collection){
+    //print_r($collection);
+    $attribute = json_decode($collection->attribute_data);
+   
+    $cats[$collection->id]=$attribute->name->en;
+}
+
 ?>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
@@ -21,7 +30,11 @@ $currentUrl = url()->current();
                                     {!! Menu::select('menu', $menulist) !!}
 
                                     <span class="submit-btn">
-										<input type="submit" class="button-secondary" value="@lang("menu-builder::messages.choose")">
+										<input type="submit" class="py-2 px-4 text-sm border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 block
+      disabled:cursor-not-allowed disabled:opacity-50
+      rounded-lg shadow-sm
+      border
+      inline-flex justify-center font-medium focus:outline-none focus:ring-offset-2 focus:ring-2" value="@lang("menu-builder::messages.choose")">
 									</span>
                                     <span class="add-new-menu-action"> @lang("menu-builder::messages.or") <a
                                             href="{{ $currentUrl }}?action=edit&menu=0">@lang("menu-builder::messages.create_new_menu")</a>. </span>
@@ -47,27 +60,31 @@ $currentUrl = url()->current();
                                                         </h3>
                                                         <div class="accordion-section-content ">
                                                             <div class="inside">
-                                                                <div class="customlinkdiv" id="customlinkdiv">
-                                                                    <p id="menu-item-url-wrap">
-                                                                        <label class="howto" for="custom-menu-item-url">
-                                                                            <span>URL</span>&nbsp;&nbsp;&nbsp;
+                                                                <div class="flex-col bg-white" id="customlinkdiv">
+                                                                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-1 md:gap-4" id="menu-item-url-wrap">
+                                                                        <div>
+                                                                        <label class="flex items-center text-sm font-medium text-gray-700" for="custom-menu-item-url">
+                                                                            <span>URL</span></label>
+                                                                            <div class="relative mt-1">
                                                                             <input id="custom-menu-item-url" name="url"
                                                                                    type="text"
-                                                                                   class="menu-item-textbox "
+                                                                                   class="form-input block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed "
                                                                                    placeholder="URL">
-                                                                        </label>
-                                                                    </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 
-                                                                    <p id="menu-item-name-wrap">
-                                                                        <label class="howto"
+                                                                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-1 md:gap-4" id="menu-item-name-wrap">
+                                                                        <label class="flex items-center text-sm font-medium text-gray-700"
                                                                                for="custom-menu-item-name">
-                                                                            <span>@lang("menu-builder::messages.label")</span>&nbsp;
+                                                                            <span>@lang("menu-builder::messages.label")</span>  </label>
+                                                                        <div>
                                                                             <input id="custom-menu-item-name"
                                                                                    name="label" type="text"
-                                                                                   class="regular-text menu-item-textbox input-with-default-title"
+                                                                                   class="form-input block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                    title="@lang("menu-builder::messages.menu_label")">
-                                                                        </label>
-                                                                    </p>
+                                                                      </div>
+                                                                    </div>
 
                                                                     @if(!empty($roles))
                                                                         <p id="menu-item-role_id-wrap">
@@ -90,7 +107,7 @@ $currentUrl = url()->current();
                                                                     <p class="button-controls">
 
                                                                         <a href="#" onclick="addcustommenu()"
-                                                                           class="button-secondary submit-add-to-menu right">@lang("menu-builder::messages.add_menu_item")</a>
+                                                                           class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 submit-add-to-menu">@lang("menu-builder::messages.add_menu_item")</a>
                                                                         <span class="spinner" id="spincustomu"></span>
                                                                     </p>
 
@@ -98,7 +115,41 @@ $currentUrl = url()->current();
                                                             </div>
                                                         </div>
                                                     </li>
+                                                    <li class="control-section accordion-section open add-page"
+                                                        id="add-collection">
+                                                        <h3 class="accordion-section-title hndle"
+                                                            tabindex="0"> @lang("menu-builder::messages.collections")
+                                                            <span
+                                                                class="screen-reader-text">@lang("menu-builder::messages.press_enter")</span>
+                                                        </h3>
+                                                        <div class="accordion-section-content ">
+                                                            <div class="inside">
+                                                                <div class="flex-col bg-white" id="collectionlinkdiv">
+                                                                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-1 md:gap-4" id="menu-item-collections-wrap">
+                                                                        <div>
+                                                                            
+                                                                            @foreach($cats as $cat_id=>$cat_name)
+                                                                            <label>
+                                                                                <input type="checkbox" class="selected_cat" value="{{$cat_id}}" name="object_id[]" data-label="{{$cat_name}}" data-link="#" />
+                                                                                {{$cat_name}}
+                                                                            </label>
+                                                                            @endforeach
+                                                                        
+                                                                        </div>
+                                                                    </div>
 
+
+                                                                    <p class="button-controls">
+
+                                                                        <a href="#" onclick="addcollectionenu()"
+                                                                           class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 submit-add-to-menu">@lang("menu-builder::messages.add_menu_item")</a>
+                                                                        <span class="spinner" id="spincollectionmenu"></span>
+                                                                    </p>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </form>
@@ -115,7 +166,7 @@ $currentUrl = url()->current();
                                                         <label class="menu-name-label howto open-label" for="menu-name">
                                                             <span>@lang("menu-builder::messages.name")</span>
                                                             <input name="menu-name" id="menu-name" type="text"
-                                                                   class="menu-name regular-text menu-item-textbox"
+                                                                   class="form-input block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed "
                                                                    title="@lang("menu-builder::messages.enter_menu_name")"
                                                                    value="@if(isset($indmenu)){{$indmenu->name}}@endif">
                                                             <input type="hidden" id="idmenu"
@@ -126,13 +177,13 @@ $currentUrl = url()->current();
                                                             <div class="publishing-action">
                                                                 <a onclick="createnewmenu()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.create_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.create_menu")</a>
                                                             </div>
                                                         @elseif(request()->has("menu"))
                                                             <div class="publishing-action">
                                                                 <a onclick="getmenus()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.save_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.save_menu")</a>
                                                                 <span class="spinner" id="spincustomu2"></span>
                                                             </div>
 
@@ -140,7 +191,7 @@ $currentUrl = url()->current();
                                                             <div class="publishing-action">
                                                                 <a onclick="createnewmenu()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.create_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.create_menu")</a>
                                                             </div>
                                                         @endif
                                                     </div>
@@ -181,14 +232,14 @@ $currentUrl = url()->current();
                                                                                         class="is-submenu"
                                                                                         style="@if($m->depth==0)display: none;@endif">@lang("menu-builder::messages.subelement")</span> </span>
                                                                                 <span class="item-controls"> <span
-                                                                                        class="item-type">Link</span> <span
+                                                                                        class="item-type">{{ucfirst($m->object_type)}}</span> <span
                                                                                         class="item-order hide-if-js"> <a
                                                                                             href="{{ $currentUrl }}?action=move-up-menu-item&menu-item={{$m->id}}&_wpnonce=8b3eb7ac44"
                                                                                             class="item-move-up"><abbr
-                                                                                                title="@lang("menu-builder::messages.move_up")">↑</abbr></a> | <a
+                                                                                                title="@lang("menu-builder::messages.move_up")">?</abbr></a> | <a
                                                                                             href="{{ $currentUrl }}?action=move-down-menu-item&menu-item={{$m->id}}&_wpnonce=8b3eb7ac44"
                                                                                             class="item-move-down"><abbr
-                                                                                                title="@lang("menu-builder::messages.move_down")">↓</abbr></a> </span> <a
+                                                                                                title="@lang("menu-builder::messages.move_down")">?</abbr></a> </span> <a
                                                                                         class="item-edit"
                                                                                         id="edit-{{$m->id}}" title=" "
                                                                                         href="{{ $currentUrl }}?edit-menu-item={{$m->id}}#menu-item-settings-{{$m->id}}"> </a> </span>
@@ -201,45 +252,67 @@ $currentUrl = url()->current();
                                                                                    class="edit-menu-item-id"
                                                                                    name="menuid_{{$m->id}}"
                                                                                    value="{{$m->id}}"/>
-                                                                            <p class="description description-thin">
+                                                                            <p class="">
                                                                                 <label
-                                                                                    for="edit-menu-item-title-{{$m->id}}"> @lang("menu-builder::messages.label")
-                                                                                    <br>
+                                                                                    for="edit-menu-item-title-{{$m->id}}"  class="flex items-center text-sm font-medium text-gray-700"> @lang("menu-builder::messages.label")
+                                                                                     </label>
                                                                                     <input type="text"
                                                                                            id="idlabelmenu_{{$m->id}}"
-                                                                                           class="widefat edit-menu-item-title"
+                                                                                           class="form-input edit-menu-item-title block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                            name="idlabelmenu_{{$m->id}}"
                                                                                            value="{{$m->label}}">
-                                                                                </label>
+                                                                               
                                                                             </p>
 
-                                                                            <p class="field-css-classes description description-thin">
+                                                                            <p class="">
                                                                                 <label
-                                                                                    for="edit-menu-item-classes-{{$m->id}}"> @lang("menu-builder::messages.class_css")
-                                                                                    <br>
+                                                                                    for="edit-menu-item-classes-{{$m->id}}"  class="flex items-center text-sm font-medium text-gray-700"> @lang("menu-builder::messages.class_css")
+                                                                                    </label>
                                                                                     <input type="text"
                                                                                            id="clases_menu_{{$m->id}}"
-                                                                                           class="widefat code edit-menu-item-classes"
+                                                                                           class="form-input edit-menu-item-classes block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                            name="clases_menu_{{$m->id}}"
                                                                                            value="{{$m->class}}">
-                                                                                </label>
+                                                                                
                                                                             </p>
-
-                                                                            <p class="field-css-url description description-wide">
+                                                                            
+                                                                            <p class="
+                                                                               @if($m->object_type!='link')
+                                                                                hidden
+                                                                               @endif">
                                                                                 <label
-                                                                                    for="edit-menu-item-url-{{$m->id}}">
+                                                                                    for="edit-menu-item-url-{{$m->id}}" class="flex items-center text-sm font-medium text-gray-700">
                                                                                     URL
-                                                                                    <br>
+                                                                                    </label>
                                                                                     <input type="text"
                                                                                            id="url_menu_{{$m->id}}"
-                                                                                           class="widefat code edit-menu-item-url"
-                                                                                           id="url_menu_{{$m->id}}"
+                                                                                           class="form-input edit-menu-item-url block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                          
                                                                                            value="{{$m->link}}">
-                                                                                </label>
+                                                                                    
+                                                                                    <input type="hidden"
+                                                                                           id="object_type_menu_{{$m->id}}"
+                                                                                           class="form-input edit-menu-item-object-type block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                      
+                                                                                           value="{{$m->object_type}}">
+                                                                                    
+                                                                                    <input type="hidden"
+                                                                                           id="object_id_menu_{{$m->id}}"
+                                                                                           class="form-input edit-menu-item-object-id block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                         
+                                                                                           value="{{$m->object_id}}">
+                                                                                
                                                                             </p>
-
+                                                                            @if($m->object_type!='link')
+                                                                            <p class="">
+                                                                                <label
+                                                                                    for="edit-menu-item-url-{{$m->id}}" class="flex items-center text-sm font-medium text-gray-700">
+                                                                                    {{ucfirst($m->object_type)}}:  <a href="{{$m->objectLink()}}" target="_blank">{{$m->objectName()}}</a>
+                                                                                    </label>
+                                                                            </p>
+                                                                            @endif
                                                                             @if(!empty($roles))
-                                                                                <p class="field-css-role description description-wide">
+                                                                                <p class="">
                                                                                     <label
                                                                                         for="edit-menu-item-role-{{$m->id}}"> @lang("menu-builder::messages.role")
                                                                                         <br>
@@ -259,43 +332,23 @@ $currentUrl = url()->current();
                                                                                 </p>
                                                                             @endif
 
-                                                                            <p class="field-move hide-if-no-js description description-wide">
-                                                                                <label>
-                                                                                    <span>@lang("menu-builder::messages.move")</span>
-                                                                                    <a href="{{ $currentUrl }}"
-                                                                                       class="menus-move-up"
-                                                                                       style="display: none;">@lang("menu-builder::messages.move_up")</a>
-                                                                                    <a href="{{ $currentUrl }}"
-                                                                                       class="menus-move-down"
-                                                                                       title="Mover uno abajo"
-                                                                                       style="display: inline;">@lang("menu-builder::messages.move_down")</a>
-                                                                                    <a href="{{ $currentUrl }}"
-                                                                                       class="menus-move-left"
-                                                                                       style="display: none;"></a> <a
-                                                                                        href="{{ $currentUrl }}"
-                                                                                        class="menus-move-right"
-                                                                                        style="display: none;"></a> <a
-                                                                                        href="{{ $currentUrl }}"
-                                                                                        class="menus-move-top"
-                                                                                        style="display: none;">@lang("menu-builder::messages.top")</a>
-                                                                                </label>
-                                                                            </p>
+                                                                           
 
                                                                             <div
                                                                                 class="menu-item-actions description-wide submitbox">
 
-                                                                                <a class="item-delete submitdelete deletion"
+                                                                                <a class="item-delete submitdelete deletion justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                                                                    id="delete-{{$m->id}}"
                                                                                    href="{{ $currentUrl }}?action=delete-menu-item&menu-item={{$m->id}}&_wpnonce=2844002501">@lang("menu-builder::messages.delete")</a>
                                                                                 <span
                                                                                     class="meta-sep hide-if-no-js"> | </span>
-                                                                                <a class="item-cancel submitcancel hide-if-no-js button-secondary"
+                                                                                <a class="item-cancel submitcancel hide-if-no-js justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                                                                    id="cancel-{{$m->id}}"
                                                                                    href="{{ $currentUrl }}?edit-menu-item={{$m->id}}&cancel=1424297719#menu-item-settings-{{$m->id}}">@lang("menu-builder::messages.cancel")</a>
                                                                                 <span
                                                                                     class="meta-sep hide-if-no-js"> | </span>
                                                                                 <a onclick="getmenus()"
-                                                                                   class="button button-primary updatemenu"
+                                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save updatemenu"
                                                                                    id="update-{{$m->id}}"
                                                                                    href="javascript:void(0)">@lang("menu-builder::messages.update_item")</a>
 
@@ -319,18 +372,18 @@ $currentUrl = url()->current();
                                                             <div class="publishing-action">
                                                                 <a onclick="createnewmenu()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.create_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.create_menu")</a>
                                                             </div>
                                                         @elseif(request()->has("menu"))
                                                             <span class="delete-action"> <a
-                                                                    class="submitdelete deletion menu-delete"
+                                                                    class="submitdelete deletion menu-delete inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                                                     onclick="deletemenu()"
                                                                     href="javascript:void(9)">@lang("menu-builder::messages.delete_menu")</a> </span>
                                                             <div class="publishing-action">
 
                                                                 <a onclick="getmenus()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.save_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.save_menu")</a>
                                                                 <span class="spinner" id="spincustomu2"></span>
                                                             </div>
 
@@ -338,7 +391,7 @@ $currentUrl = url()->current();
                                                             <div class="publishing-action">
                                                                 <a onclick="createnewmenu()" name="save_menu"
                                                                    id="save_menu_header"
-                                                                   class="button button-primary menu-save">@lang("menu-builder::messages.create_menu")</a>
+                                                                   class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 menu-save">@lang("menu-builder::messages.create_menu")</a>
                                                             </div>
                                                         @endif
                                                     </div>

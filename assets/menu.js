@@ -47,7 +47,9 @@ function addcustommenu() {
       labelmenu: $('#custom-menu-item-name').val(),
       linkmenu: $('#custom-menu-item-url').val(),
       rolemenu: $('#custom-menu-item-role').val(),
-      idmenu: $('#idmenu').val()
+      idmenu: $('#idmenu').val(),
+      object_type:'link',
+      object_id:0
     },
 
     url: addcustommenur,
@@ -57,6 +59,37 @@ function addcustommenu() {
     },
     complete: function() {
       $('#spincustomu').hide();
+    }
+  });
+}
+
+function addcollectionenu(){
+    console.log('called');
+    $('#spincollectionmenu').show();
+    var items = [];
+    $('.selected_cat:checked').each(function(i,v){
+       items.push({
+           labelmenu:$(v).data('label'),
+           linkmenu:$(v).data('link'),
+           rolemenu:0,
+           idmenu: $('#idmenu').val(),
+           object_type:'collection',
+           object_id:$(v).val()
+       }); 
+    });
+  $.ajax({
+    data: {
+        items:items,
+        type:'multi'
+    },
+
+    url: addcustommenur,
+    type: 'POST',
+    success: function(response) {
+      window.location.reload();
+    },
+    complete: function() {
+      $('#spincollectionmenu').hide();
     }
   });
 }

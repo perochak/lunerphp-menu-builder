@@ -91,15 +91,37 @@ class MenuController extends Controller
 
     public function addMenuItem()
     {
-        $menuItem = new MenuItems();
-        $menuItem->label = request()->input("labelmenu");
-        $menuItem->link = request()->input("linkmenu");
-        if (config('menu.use_roles')) {
-            $menuItem->role_id = request()->input("rolemenu") ? request()->input("rolemenu")  : 0 ;
+        $type = request()->input("type") ? request()->input("type")  : '' ;
+        if($type==''){
+            $menuItem = new MenuItems();
+            $menuItem->label = request()->input("labelmenu");
+            $menuItem->link = request()->input("linkmenu");
+            if (config('menu.use_roles')) {
+                $menuItem->role_id = request()->input("rolemenu") ? request()->input("rolemenu")  : 0 ;
+            }
+            $menuItem->menu_id = request()->input("idmenu");
+            $menuItem->sort = MenuItems::getNextSortRoot(request()->input("idmenu"));
+            $menuItem->object_type = request()->input('object_type')?request()->input('object_type'):'link';
+            $menuItem->object_id =  request()->input('object_id')?request()->input('object_id'):0;
+            $menuItem->save();
+        }else{
+            $items = request()->input("items") ? request()->input("items")  : array() ;
+            if(!is_array($items)){
+                $items = array();
+            }
+            foreach($items as $item){
+                $menuItem = new MenuItems();
+                $menuItem->label = $item['labelmenu'];
+                $menuItem->link = $item['linkmenu'];
+                if (config('menu.use_roles')) {
+                    $menuItem->role_id = $item['rolemenu']?$item['rolemenu']:0;
+                }
+                $menuItem->menu_id = $item['idmenu'];
+                $menuItem->sort = MenuItems::getNextSortRoot($item['idmenu']);
+                $menuItem->object_type = $item['object_type'];
+                $menuItem->object_id =  $item['object_id'];
+                $menuItem->save();
+            }
         }
-        $menuItem->menu_id = request()->input("idmenu");
-        $menuItem->sort = MenuItems::getNextSortRoot(request()->input("idmenu"));
-        $menuItem->save();
-
     }
 }
